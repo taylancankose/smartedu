@@ -2,6 +2,8 @@ const express = require('express')
 const mongoose = require('mongoose')
 const session = require('express-session')
 const MongoStore = require('connect-mongo') // session'ı mongostore'a kaydedip sunucu durduğunda bir değişiklik olduğunda bile logged in kalmamıza yarıyor
+const flash = require('connect-flash')
+const methodOverride = require('method-override')
 const pageRoute = require('./routes/pageRoute')
 const courseRoute = require('./routes/courseRoute')
 const categoryRoute = require('./routes/categoryRoute')
@@ -11,10 +13,13 @@ const app = express()
 
 // Connect to MongoDB
 mongoose
-  .connect('mongodb://localhost/smartedu-db', {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  })
+  .connect(
+    'mongodb+srv://teco:teco@cluster0.2jqvs.mongodb.net/smartedu-db?retryWrites=true&w=majority',
+    {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    }
+  )
   .then(() => {
     console.log('MongoDB connected')
   })
@@ -37,6 +42,16 @@ app.use(
     store: MongoStore.create({ mongoUrl: 'mongodb://localhost/smartedu-db' }), // session'ın kaydedileceği yer
   })
 )
+app.use(flash())
+app.use((req, res, next) => {
+  res.locals.flashMessages = req.flash()
+  next()
+})
+app.use(
+  methodOverride('_method', {
+    methods: ['POST', 'GET'],
+  })
+)
 
 // ROUTES
 app.use('*', (req, res, next) => {
@@ -48,5 +63,5 @@ app.use('/courses', courseRoute)
 app.use('/categories', categoryRoute)
 app.use('/users', userRoute)
 
-const port = 3000
+const port = process.env.PORT || 5000
 app.listen(port, () => console.log(`SmartEdu app listening on port ${port}!`))
