@@ -39,7 +39,10 @@ app.use(
     secret: 'my_keyboard_cat', // benim özel secretım
     resave: false, // herhangi bir değişiklik yapılmadığında bile otomatik olarak session'ı kaydetme
     saveUninitialized: true, // session'ın başlangıç değerini kaydetme
-    store: MongoStore.create({ mongoUrl: 'mongodb://localhost/smartedu-db' }), // session'ın kaydedileceği yer
+    store: MongoStore.create({
+      mongoUrl:
+        'mongodb+srv://teco:teco@cluster0.2jqvs.mongodb.net/smartedu-db?retryWrites=true&w=majority',
+    }), // session'ın kaydedileceği yer
   })
 )
 app.use(flash())
